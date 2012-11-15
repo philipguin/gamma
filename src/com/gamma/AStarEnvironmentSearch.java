@@ -12,6 +12,7 @@ public abstract class AStarEnvironmentSearch
 {
 	private static final float SQRT_OF_TWO = FloatMath.sqrt(2f);
 	private static final float SQRT_OF_TWO_MINUS_TWO = SQRT_OF_TWO - 2f;
+	private static final float COST_PER_ELEVATION = 16f;
 	
 	private AStarEnvironmentSearch() { }
 	
@@ -23,7 +24,7 @@ public abstract class AStarEnvironmentSearch
 		//float h_diagonal = Math.min(dx, dy);
 		//return SQRT_OF_TWO * h_diagonal + D * (dx + dy - 2 * h_diagonal);
 		
-		return Math.min(dx, dy) * SQRT_OF_TWO_MINUS_TWO + dx + dy + Math.abs(goalElevation - environment.getElevation(fromX, fromY));
+		return Math.min(dx, dy) * SQRT_OF_TWO_MINUS_TWO + dx + dy + COST_PER_ELEVATION * Math.abs(goalElevation - environment.getElevation(fromX, fromY));
 	}
 	
 	private static final int indexOf(int x, int y) { return y << 16 | x; }
@@ -146,7 +147,10 @@ public abstract class AStarEnvironmentSearch
 		        if (visitation.get(to, 0) == 2 || !couldMove(environment, stepHeight, currentIndex, to))
 		        	continue;
 		        
-		        float tentative_g_score = g_score.get(currentIndex, 0f) + (d < 4 ? 1f : SQRT_OF_TWO) + Math.abs(environment.getElevation(newX, newY) - currentElevation);
+		        float tentative_g_score =
+		        	g_score.get(currentIndex, 0f)
+		        	+ (d < 4 ? 1f : SQRT_OF_TWO)
+		        	+ COST_PER_ELEVATION * Math.abs(environment.getElevation(newX, newY) - currentElevation);
 
 	            if (visitation.get(to, 0) != 1)
 	            {

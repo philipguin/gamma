@@ -29,6 +29,8 @@ public class MainActivity extends Activity
 	private int frameRateCap = 10;
 	private long lastDrawTime = 0;
 	
+	private static final int initialCreatureCount = 40;
+	
 	@SuppressWarnings("unchecked")
 	private static final float[] generateTerrain(Random random, int width, int height)
 	{
@@ -67,10 +69,9 @@ public class MainActivity extends Activity
         
         IEnvironment environment = new Environment(new byte[32 * 32], /*new float[32 * 32],*/ generateTerrain(random, 32, 32), new float[32 * 32], 5);
 
-        int creatureCount = 5;
-        List<Creature> creatures = new ArrayList<Creature>(creatureCount);
+        List<Creature> creatures = new ArrayList<Creature>(initialCreatureCount);
         
-        for (int i = 0; i < creatureCount; ++i)
+        for (int i = 0; i < initialCreatureCount; ++i)
         	creatures.add(new Creature(32));
         
         this.simulation = new Simulation(
