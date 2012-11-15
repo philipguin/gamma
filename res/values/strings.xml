@@ -1,8 +1,23 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <string name="app_name">Gamma</string>
+    <string name="app_name">Project Gamma</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_home">Project GAMMA</string>
+    <string name="new_pop">Create New Population</string>
+    <string name="mod_fit">Modify Fitness Algorithm</string>
+    <string name="run_sim">Simulate Evolution</string>
+    <string name="title_activity_new_pop">Create New Population</string>
+    <string name="mod_fit_box_label">Enter Fitness Algorithm</string>
+    <string name="main_menu_return">Return to Main Menu</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_mod_fit">Modify Fitness Algorithm</string>
+    <string name="clear_fit_box">X</string>
+    <string name="reset_fit_box">Restore</string>
+    <string name="enter_box">Done</string>
+    <string name="mod_fit_list_view">Expanded View</string>
+    <string name="title_activity_new_pop_list_view">Create New Population</string>
+    <string name="mod_fit_list_expand">Expand</string>
+    <string name="delete_button">X</string>
+    <string android:id="@+id/title_activity_main" android:layout_height="wrap_content" android:layout_width="wrap_content" name="title_activity_main">Simulation</string>
 
 </resources>
