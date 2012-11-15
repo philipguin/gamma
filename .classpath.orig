@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/evolve"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/terraingen"/>
+<<<<<<< HEAD
+=======
+	<classpathentry kind="lib" path="F:/Users/Kaleb/AppData/Local/Android/android-sdk/platforms/android-16/android.jar"/>
+>>>>>>> 799972fa8ac38429b4e5fbfdba53927b10eb2428
+	<classpathentry kind="output" path="bin/classes"/>
+</classpath>
