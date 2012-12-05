@@ -31,9 +31,7 @@ public class HomeActivity extends Activity {
     
     /** Called when the user clicks the Simulate Evolution button **/
     public void goToRunSimMenu(View view) {
-    	Log.d("goToRunSimMenu", "before creating intent");
     	Intent intent = new Intent(this, MainActivity.class);
-    	Log.d("goToRunSimMenu", "before starting activity");
     	startActivity(intent);
     }
 }

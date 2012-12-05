@@ -205,6 +205,23 @@ public class ModFitActivity extends Activity {
     	}
     }
     
+    /** Condenses data into single-algorithm form */
+    private String condenseAlgorithm() {
+    	String algorithm = "";
+		int max = inputStrings.size();
+		for (int i = 0; i < max; i++) {
+			if (inputStrings.get(i).trim() != "") {
+				if (algorithm == "") {
+					algorithm = inputStrings.get(0);
+				} else {
+					algorithm += " + " + inputStrings.get(0);
+				}
+				inputStrings.remove(0);
+			}
+		}
+		return algorithm;
+    }
+    
     /** Called when the user clicks the "X" button next to a textbox
      * 		Removes the textbox, setting the layout accordingly
      */
@@ -226,19 +243,29 @@ public class ModFitActivity extends Activity {
      * 		Stores the fitness algorithm in private file
      */
     public void done(View view) {
-    	FileOutputStream output;
 		try {
-			output = openFileOutput(filename, Context.MODE_PRIVATE);
-			try {
-				output.write("placeholder_string".getBytes());
-				output.close();
-			} catch (IOException e) {}
-		} catch (FileNotFoundException e) {
-			//Android's Context.MODE_PRIVATE actually takes care of this,
-			// try/catch only added to satisfy java compiler
-		}
-    	
-
+			//Open file output stream
+			FileOutputStream output = openFileOutput(filename, Context.MODE_PRIVATE);
+			
+			//Get data from textboxes
+			storeTextboxData();
+			
+			//Put data in single-algorithm form
+			String algorithm = condenseAlgorithm();
+			
+			//If algorithm is empty, do nothing. Otherwise...
+			if (algorithm != "") {
+				//Write algorithm to file
+				try {
+					output.write(algorithm.getBytes());
+					output.close();
+				} catch (IOException e) {}
+				
+				//Go to simulation screen
+				Intent intent = new Intent(this, MainActivity.class);
+				startActivity(intent);
+			}
+		} catch (FileNotFoundException e) {}
     }
     
     /** Called when the user clicks the "Return to Main Menu" menu button
