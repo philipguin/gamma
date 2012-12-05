@@ -1,9 +1,13 @@
 package com.gamma;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,13 +16,14 @@ import android.widget.EditText;
 
 /** Activity for the Enter Fitness Algorithm menu **/
 public class ModFitActivity extends Activity {
-	private boolean isNewPopScreen;
 	private ArrayList<String> inputStrings;
 	private int totalTextboxes;
+	private String filename;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        filename = "fitness_algorithm";
         
         // Set layout to Modify Fitness with one textbox
         setContentView(R.layout.activity_mod_fit_1);
@@ -30,14 +35,10 @@ public class ModFitActivity extends Activity {
         //Set activity's title
         setTitle(title);
         
-        //Set boolean value based on whether or not the title is Create New Population
-        // (This will be used later to determine the behavior of the "Done" button
-        if (title == "Create New Population") {
-        	isNewPopScreen = true;
+        //If in Modify Fitness Algorithm, display current
+        // fitness algorithm
+        if (title == "Modify Fitness Algorithm") {
         } 
-        else {
-        	isNewPopScreen = false;
-        }
         
         //Initialize inputStrings
         inputStrings = new ArrayList<String>();
@@ -219,7 +220,25 @@ public class ModFitActivity extends Activity {
     	
     	//Put stored data into new layout
     	extractTextboxData();
+    }
+    
+    /** Called when the user clicks the "Done" button
+     * 		Stores the fitness algorithm in private file
+     */
+    public void done(View view) {
+    	FileOutputStream output;
+		try {
+			output = openFileOutput(filename, Context.MODE_PRIVATE);
+			try {
+				output.write("placeholder_string".getBytes());
+				output.close();
+			} catch (IOException e) {}
+		} catch (FileNotFoundException e) {
+			//Android's Context.MODE_PRIVATE actually takes care of this,
+			// try/catch only added to satisfy java compiler
+		}
     	
+
     }
     
     /** Called when the user clicks the "Return to Main Menu" menu button
