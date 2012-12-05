@@ -165,6 +165,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
+                    android:onClick="done"
                     android:layout_marginRight="65dp"
                     android:text="@string/enter_box" />
             </RelativeLayout>

@@ -274,6 +274,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginRight="65dp"
+                    android:onClick="done"
                     android:text="@string/enter_box" />
             </RelativeLayout>
         </TableRow>
