@@ -72,7 +72,7 @@ public class MainActivity extends Activity
         List<Creature> creatures = new ArrayList<Creature>(initialCreatureCount);
         
         for (int i = 0; i < initialCreatureCount; ++i)
-        	creatures.add(new Creature(32));
+        	creatures.add(new Creature(119));
         
         this.simulation = new Simulation(
         		random,
