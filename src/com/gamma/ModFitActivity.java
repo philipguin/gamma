@@ -210,14 +210,14 @@ public class ModFitActivity extends Activity {
     	String algorithm = "";
 		int max = inputStrings.size();
 		for (int i = 0; i < max; i++) {
-			if (inputStrings.get(i).trim() != "") {
+			if (inputStrings.get(0).trim() != "") {
 				if (algorithm == "") {
 					algorithm = inputStrings.get(0);
 				} else {
 					algorithm += " + " + inputStrings.get(0);
 				}
-				inputStrings.remove(0);
 			}
+			inputStrings.remove(0);
 		}
 		return algorithm;
     }
