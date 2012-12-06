@@ -51,11 +51,10 @@ public class Creature extends Entity implements IFitnessed
 	@Override public float getColorGreen() { return green; }
 	@Override public float getColorBlue() { return blue; }
 	
-	public float[] getStats() {
-		float[] stats = new float[11];
-		//Put appropriate values in stats
-		return stats;
-	}
+	public float getStepHeight() { return stepHeight; }
+	public float getSpeed() { return ticksPerMove; }
+	public float getStrength() { return damagePerHit; }
+	public float getCapacity() { return energyCapacity; }
 	
 	public void onBirth()
 	{

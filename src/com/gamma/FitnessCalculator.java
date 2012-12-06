@@ -13,6 +13,8 @@ public class FitnessCalculator {
 	
 	public int calculateFitness(Creature creature) {
 		//Get stats from creature
-		return 0; //Placeholder
+		int fitness = 0;
+		//TODO Use evaluator to get fitness
+		return fitness;
 	}
 }
