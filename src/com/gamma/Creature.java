@@ -20,7 +20,7 @@ public class Creature extends Entity implements IFitnessed
 	private final float energyPerMove, damagePerHit, energyPerHit, stepHeight, red, green, blue, targetPriority_Energy, targetPriority_Distance;
 
 	private float fitness = .1f;
-	private int killCount = 0, deathCount = 0;
+	private int killCount = 0, deathCount = 0, totalDamageOutput = 0, totalDamageTaken = 0;
 	private float energy, maxEnergy, energyLostPerTick;
 
 	private ArrayList<Integer> currentPath = new ArrayList<Integer>();
@@ -62,6 +62,10 @@ public class Creature extends Entity implements IFitnessed
 	public float getStrength() { return damagePerHit; }
 	public float getMaxEnergy() { return maxEnergy; }
 	public float getEnergy() { return energy; }
+	public int getKills() { return killCount; }
+	public int getDeaths() { return deathCount; }
+	public float getTotalDamageOutput() { return totalDamageOutput; }
+	public float getTotalDamageTaken() { return totalDamageTaken; }
 	
 	public void setFitness(float newFitness) {
 		fitness = newFitness;
@@ -203,6 +207,7 @@ public class Creature extends Entity implements IFitnessed
 		if (energy >= energyPerHit && collidingEntity.equals(target) && collidingEntity instanceof Creature)
 		{
 			energy -= energyPerHit;
+			totalDamageOutput += damagePerHit;
 			
 			if (((Creature)collidingEntity).takeDamageFromEntity(this, damagePerHit))
 			{
@@ -215,6 +220,7 @@ public class Creature extends Entity implements IFitnessed
 	public boolean takeDamageFromEntity(Entity attacker, float damage)
 	{
 		energy -= damage;
+		totalDamageTaken += damage;
 		
 		if (energy <= 0f)
 		{
