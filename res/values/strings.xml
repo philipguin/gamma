@@ -19,5 +19,6 @@
     <string name="mod_fit_list_expand">Expand</string>
     <string name="delete_button">X</string>
     <string android:id="@+id/title_activity_main" android:layout_height="wrap_content" android:layout_width="wrap_content" name="title_activity_main">Simulation</string>
+    <string name="help_text">Attributes: speed, strength, stepHeight, maxEnergy, red, green, blue, kills, deaths, totalDamageOutput, totalDamageTaken</string>
 
 </resources>
