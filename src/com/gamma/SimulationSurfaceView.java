@@ -11,6 +11,11 @@ public class SimulationSurfaceView extends GLSurfaceView
 	private final DrawableRenderer renderer;
 	private final Simulation simulation;
 	
+	public SimulationSurfaceView(Context context)
+	{
+		this(context, null);
+	}
+	
 	public SimulationSurfaceView(Context context, Simulation simulation)
 	{
 		super(context);

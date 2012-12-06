@@ -115,7 +115,6 @@ public class Creature extends Entity implements IFitnessed
 			return false;
 		
 		currentPath.remove(0); // We're already in the first element
-
 		return !currentPath.isEmpty();
 	}
 	
