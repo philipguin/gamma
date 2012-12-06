@@ -4,9 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.io.StringReader;
+import java.util.List;
+
+import android.app.Activity;
 
 import com.gamma.parser.Build;
 import com.gamma.parser.IEvaluator;
@@ -16,8 +17,6 @@ import com.gamma.parser.Parser.ASTPart;
 import com.gamma.parser.Tokenizer;
 import com.gamma.parser.Tokenizer.ParseException;
 import com.gamma.parser.Tokenizer.Token;
-
-import android.app.Activity;
 
 public class FitnessCalculator {
 	private String algorithm;
@@ -38,8 +37,8 @@ public class FitnessCalculator {
     		BufferedReader input = new BufferedReader(new FileReader(fileName));
     		
     		//Read the algorithm from the file
-    		algorithm = input.readLine();
-    		input.close();
+    		algorithm = "totaldamageoutput / (totaldamagetaken + 1)";//input.readLine();
+    		//input.close();
     		
     		//If alrgorithm is empty, make it non-empty
     		if (algorithm.trim() == "") {
@@ -57,7 +56,7 @@ public class FitnessCalculator {
     		
     		//Convert to evaluator tree
     		Build builder = new Build();
-    		IEvaluator<Double> eTree = builder.build((ASTNode)tree);
+    		eTree = builder.build((ASTNode)tree);
     	} catch (FileNotFoundException e) {
     	    e.printStackTrace();
     	} catch (IOException e) {
@@ -72,6 +71,7 @@ public class FitnessCalculator {
 	}
 	
 	public void calculateFitnesses() {
+		refreshAlgorithm();
 		for (Creature creature : creatures) {
 			Float fitness = eTree == null ? null : eTree.resolve(creature).floatValue();
 			

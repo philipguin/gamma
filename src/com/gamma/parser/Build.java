@@ -13,7 +13,7 @@ import com.gamma.parser.Tokenizer.ParseException;
 
 public class Build
 {
-	public IEvaluator<Double> build(ASTPart d){
+	public IEvaluator<Double> build(ASTPart d) {
 		if (d instanceof ASTNode)
 		{
 			ASTNode node = (ASTNode)d;
