@@ -1,14 +1,16 @@
 package com.gamma;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import android.os.Bundle;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,12 +20,13 @@ import android.widget.EditText;
 public class ModFitActivity extends Activity {
 	private ArrayList<String> inputStrings;
 	private int totalTextboxes;
-	private String filename;
+	private String fileName, dirName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        filename = "fitness_algorithm";
+        dirName = getFilesDir().getAbsolutePath();
+        fileName = dirName + "/fitness_algorithm.txt";
         
         // Set layout to Modify Fitness with one textbox
         setContentView(R.layout.activity_mod_fit_1);
@@ -37,11 +40,31 @@ public class ModFitActivity extends Activity {
         
         //If in Modify Fitness Algorithm, display current
         // fitness algorithm
-        if (title == "Modify Fitness Algorithm") {
-        } 
-        
-        //Initialize inputStrings
-        inputStrings = new ArrayList<String>();
+        if (title.equals("Modify Fitness Algorithm")) {
+        	try {
+        		//Open reader
+        		BufferedReader input = new BufferedReader(new FileReader(fileName));
+        		
+        		//Read the algorithm from the file
+        		String algorithm = input.readLine();
+        		
+        		//Initialize input strings with algorithm
+        		inputStrings = new ArrayList<String>();
+        		inputStrings.add(algorithm);
+        		
+        		//Fill textbox
+        		extractTextboxData();
+        		
+        		input.close();
+        	} catch (FileNotFoundException e) {
+        	    e.printStackTrace();
+        	} catch (IOException e) {
+        	    e.printStackTrace();
+        	}
+        } else {
+        	//Initialize inputStrings
+        	inputStrings = new ArrayList<String>();
+        }
     }
 
     @Override
@@ -244,8 +267,8 @@ public class ModFitActivity extends Activity {
      */
     public void done(View view) {
 		try {
-			//Open file output stream
-			FileOutputStream output = openFileOutput(filename, Context.MODE_PRIVATE);
+			//Open file writer
+			FileWriter output = new FileWriter(fileName);
 			
 			//Get data from textboxes
 			storeTextboxData();
@@ -256,16 +279,19 @@ public class ModFitActivity extends Activity {
 			//If algorithm is empty, do nothing. Otherwise...
 			if (algorithm != "") {
 				//Write algorithm to file
-				try {
-					output.write(algorithm.getBytes());
-					output.close();
-				} catch (IOException e) {}
+				output.write(algorithm);
 				
 				//Go to simulation screen
 				Intent intent = new Intent(this, MainActivity.class);
 				startActivity(intent);
-			}
-		} catch (FileNotFoundException e) {}
+				} 
+			
+			output.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
     
     /** Called when the user clicks the "Return to Main Menu" menu button
