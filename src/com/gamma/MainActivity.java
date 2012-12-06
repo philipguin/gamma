@@ -1,6 +1,5 @@
 package com.gamma;
 
-import genome.GaussianRandomGenomeCreator;
 import genome.GenomeMater;
 import genome.UniformRandomGenomeCreator;
 
