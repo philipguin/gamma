@@ -39,12 +39,13 @@ public class Build {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
+			return new IEvaluator.IDkills();
 		case CONSTANT:
 			@SuppressWarnings("unchecked")
 			ASTLeafConstant<Double> constantLeaf = (ASTLeafConstant<Double>)d;
 			return new IEvaluator.EvalNumber(constantLeaf.value);
 		default:
-			return null;
+			return new IEvaluator.EvalNumber(1);
 		}
 	}
 
@@ -61,7 +62,7 @@ public class Build {
 		case NEGATE:
 			return new IEvaluator.NegateDouble(build((ASTLeaf) d.children[0]));
 		default:
-			return null;
+			return new IEvaluator.EvalNumber(1);
 		}
 	}
 }

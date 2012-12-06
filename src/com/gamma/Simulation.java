@@ -84,7 +84,7 @@ public class Simulation
 		{
 			for (Entity entity : entities)
 				entity.onRemoval();
-			
+			fitnessCalculator.refreshAlgorithm();
 			fitnessCalculator.calculateFitnesses();
 			creatures = reproducer.makeNextGeneration(creatures, mater);
 			entities = new LinkedList<Entity>(creatures);

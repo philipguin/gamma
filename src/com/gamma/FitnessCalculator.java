@@ -24,6 +24,7 @@ public class FitnessCalculator {
 	private List<Creature> creatures;
 	private Activity context;
 	private IEvaluator<Double> eTree;
+	private String defaultAlgorithm = "kills";
 	
 	public FitnessCalculator(Activity contextActivity) {
 		context = contextActivity;
@@ -39,6 +40,11 @@ public class FitnessCalculator {
     		//Read the algorithm from the file
     		algorithm = input.readLine();
     		input.close();
+    		
+    		//If alrgorithm is empty, make it non-empty
+    		if (algorithm.trim() == "") {
+    			algorithm = defaultAlgorithm;
+    		}
     		
     		//Read tokens from algorithm
     		input = new BufferedReader(new StringReader(algorithm));
