@@ -11,7 +11,7 @@ import fitness.IFitnessed;
 
 public class Creature extends Entity implements IFitnessed
 {	
-	public static final int GENOME_LENGTH = 8, MOVES_PER_REPATHING = 7, TICKS_PER_TARGET_SCAN = 1000, TARGET_SCAN_RADIUS = 5;
+	public static final int GENOME_LENGTH = 8, MOVES_PER_REPATHING = 12, TICKS_PER_TARGET_SCAN = 700, TARGET_SCAN_RADIUS = 5;
 	public static final float MIN_ENERGY_CAPACITY = 150f, MAX_ENERGY_CAPACITY = 300f, MIN_ENERGY_LOST_PER_TICK = .25f, MAX_ENERGY_LOST_PER_TICK = 2.5f, MIN_COLOR = .4f;
 	public static final float SQRT_2 = (float)Math.sqrt(2), MAX_TARGET_DISTANCE = SQRT_2 * TARGET_SCAN_RADIUS;
 	

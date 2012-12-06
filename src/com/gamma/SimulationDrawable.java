@@ -35,7 +35,7 @@ public class SimulationDrawable implements IDrawable<GL10>
 	private final FloatBuffer quadColorBuffer = quadColorBufferDirect.asFloatBuffer();
 
 	private static final float Z_NEAREST = -100f, Z_FURTHEST = 100f;
-	public static final int BLOCK_BIT_SHIFT = 4;
+	public static final int BLOCK_BIT_SHIFT = 6;
 	public static final int BLOCK_DIMENSIONS = 1 << BLOCK_BIT_SHIFT;
 	
 	@Override
