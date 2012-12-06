@@ -67,9 +67,10 @@ public class FitnessCalculator {
 	
 	public void calculateFitnesses() {
 		for (Creature creature : creatures) {
-			float fitness = eTree.resolve(creature).floatValue();
-			if (fitness <= 0) {
-				fitness = 0.0001f;
+			Float fitness = eTree == null ? null : eTree.resolve(creature).floatValue();
+			
+			if (fitness == null || fitness <= 0f) {
+				fitness = 0.01f;
 			}
 			creature.setFitness(fitness);
 		}	

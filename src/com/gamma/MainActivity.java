@@ -33,7 +33,7 @@ public class MainActivity extends Activity
 	private Simulation simulation;
 	private volatile boolean mainLoopRunning = true;
 
-	private int frameRateCap = 100;
+	private int frameRateCap = 60;
 	private long lastDrawTime = 0;
 	
 	private static final int initialCreatureCount = 40;
@@ -85,7 +85,7 @@ public class MainActivity extends Activity
     			creatures,
     			new SelectionReproducer<Creature>(2, new WeightedMultiselector<Creature>(random, new FitnessWeightMaker<Creature>(), true)),
     			new Creature.Mater(random, new GenomeMater(random, 0f, 1f, .25f, .2f, .25f)),
-    			60 * 40,
+    			60 * 10,
     			this);
     			
         view = new SimulationSurfaceView(this, simulation);
