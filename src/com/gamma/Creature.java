@@ -11,7 +11,7 @@ import fitness.IFitnessed;
 public class Creature extends Entity implements IFitnessed
 {	
 	public static final int GENOME_LENGTH = 8, MOVES_PER_REPATHING = 7;
-	public static final float MAX_ENERGY = 30f, ENERGY_LOST_PER_TICK = .25f, MIN_COLOR = 20;
+	public static final float MAX_ENERGY = 30f, ENERGY_LOST_PER_TICK = .25f, MIN_COLOR = .2f;
 	
 	private final float[] genes;
 	private final int ticksPerMove;
@@ -41,15 +41,15 @@ public class Creature extends Entity implements IFitnessed
 		
 		this.stepHeight = 1f + genes[3];
 		
-		this.red = MIN_COLOR + 0.8f * genes[5];
-		this.blue = MIN_COLOR + 0.8f * genes[6];
-		this.green = MIN_COLOR + 0.8f * genes[7];
+		this.red = MIN_COLOR + (1f - MIN_COLOR) * genes[5];
+		this.green = MIN_COLOR + (1f - MIN_COLOR) * genes[6];
+		this.blue = MIN_COLOR + (1f - MIN_COLOR) * genes[7];
 	}
 
 	@Override public float getFitness() { return fitness; }
-	@Override public float getColorRed() { return 1f; }
-	@Override public float getColorGreen() { return energy / energyCapacity; }
-	@Override public float getColorBlue() { return energy / energyCapacity; }
+	@Override public float getColorRed() { return red; }
+	@Override public float getColorGreen() { return green; }
+	@Override public float getColorBlue() { return blue; }
 	
 	public float[] getStats() {
 		float[] stats = new float[11];
