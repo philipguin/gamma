@@ -197,7 +197,7 @@ public class Parser
 	}
 	
 	
-	protected final ASTPart makeExpression() throws ParseException
+	public final ASTPart makeExpression() throws ParseException
 	{
 		return checkGrammar_Exor();
 	}

@@ -6,82 +6,102 @@ public interface IEvaluator<T>
 {	
 	public T resolve(Creature creature);
 	
-	public static class IDspeed implements IEvaluator<Float> {
-		public Float resolve(Creature creature){
-			return creature.getSpeed();
+	public static class EvalNumber implements IEvaluator<Double> {
+		private double value;
+		
+		public EvalNumber(int Value) {
+			value = (double) Value;
+		}
+		
+		public EvalNumber(float Value) {
+			value = (double) Value;
+		}
+		
+		public EvalNumber(double Value) {
+			value = Value;
+		}
+		
+		public Double resolve(Creature creature){
+			return value;
 		}
 	}
 	
-	public static class IDstrength implements IEvaluator<Float> {
-		public Float resolve(Creature creature){
-			return creature.getStrength();
+	public static class IDspeed implements IEvaluator<Double> {
+		public Double resolve(Creature creature){
+			return (double) creature.getSpeed();
 		}
 	}
 	
-	public static class IDstepHeight implements IEvaluator<Float> {
-		public Float resolve(Creature creature){
-			return creature.getStepHeight();
+	public static class IDstrength implements IEvaluator<Double> {
+		public Double resolve(Creature creature){
+			return (double) creature.getStrength();
 		}
 	}
 	
-	public static class IDmaxEnergy implements IEvaluator<Float> {
-		public Float resolve(Creature creature){
-			return creature.getMaxEnergy();
+	public static class IDstepHeight implements IEvaluator<Double> {
+		public Double resolve(Creature creature){
+			return (double) creature.getStepHeight();
 		}
 	}
 	
-	public static class IDkills implements IEvaluator<Float> {
-		public Float resolve(Creature creature){
-			return (float) creature.getKills();
+	public static class IDmaxEnergy implements IEvaluator<Double> {
+		public Double resolve(Creature creature){
+			return (double) creature.getMaxEnergy();
 		}
 	}
 	
-	public static class IDdeaths implements IEvaluator<Float> {
-		public Float resolve(Creature creature){
-			return (float) creature.getDeaths();
+	public static class IDkills implements IEvaluator<Double> {
+		public Double resolve(Creature creature){
+			return (double) creature.getKills();
 		}
 	}
 	
-	public static class IDtotalDamageOutput implements IEvaluator<Float> {
-		public Float resolve(Creature creature){
-			return creature.getTotalDamageOutput();
+	public static class IDdeaths implements IEvaluator<Double> {
+		public Double resolve(Creature creature){
+			return (double) creature.getDeaths();
 		}
 	}
 	
-	public static class IDtotalDamageTaken implements IEvaluator<Float> {
-		public Float resolve(Creature creature){
-			return creature.getTotalDamageTaken();
+	public static class IDtotalDamageOutput implements IEvaluator<Double> {
+		public Double resolve(Creature creature){
+			return (double) creature.getTotalDamageOutput();
 		}
 	}
 	
-	public static class IDred implements IEvaluator<Float> {
-		public Float resolve(Creature creature){
-			return creature.getColorRed();
+	public static class IDtotalDamageTaken implements IEvaluator<Double> {
+		public Double resolve(Creature creature){
+			return (double) creature.getTotalDamageTaken();
 		}
 	}
 	
-	public static class IDblue implements IEvaluator<Float> {
-		public Float resolve(Creature creature){
-			return creature.getColorBlue();
+	public static class IDred implements IEvaluator<Double> {
+		public Double resolve(Creature creature){
+			return (double) creature.getColorRed();
 		}
 	}
 	
-	public static class IDgreen implements IEvaluator<Float> {
-		public Float resolve(Creature creature){
-			return creature.getColorGreen();
+	public static class IDblue implements IEvaluator<Double> {
+		public Double resolve(Creature creature){
+			return (double) creature.getColorBlue();
+		}
+	}
+	
+	public static class IDgreen implements IEvaluator<Double> {
+		public Double resolve(Creature creature){
+			return (double) creature.getColorGreen();
 		}
 	}
 
-	public static class AdditionFloat implements IEvaluator<Float> {
+	public static class AdditionFloat implements IEvaluator<Double> {
 		
-		private final IEvaluator<Float> left, right;
+		private final IEvaluator<Double> left, right;
 		
-		public AdditionFloat(IEvaluator<Float> left, IEvaluator<Float> right) {
+		public AdditionFloat(IEvaluator<Double> left, IEvaluator<Double> right) {
 			this.left = left;
 			this.right = right;
 		}
 		
-		public Float resolve(Creature creature){
+		public Double resolve(Creature creature){
 			return left.resolve(creature) + right.resolve(creature);
 		}
 	}
@@ -112,38 +132,11 @@ public interface IEvaluator<T>
 			return left.resolve(creature) + right.resolve(creature);
 		}
 	}
-	public static class SubstractionFloat implements IEvaluator<Float> {
+	public static class SubtractionFloat implements IEvaluator<Double> {
 		
-		private final IEvaluator<Float> left, right;
-		
-		public SubstractionFloat(IEvaluator<Float> left, IEvaluator<Float> right) {
-			this.left = left;
-			this.right = right;
-		}
-		
-		public Float resolve(Creature creature){
-			return left.resolve(creature) - right.resolve(creature);
-		}
-	}
-	
-	
-	public static class SubstractionInteger implements IEvaluator<Integer>{
-		private final IEvaluator<Integer> left, right;
-		
-		public SubstractionInteger(IEvaluator<Integer> left, IEvaluator<Integer> right) {
-			this.left = left;
-			this.right = right;
-		}
-		
-		public Integer resolve(Creature creature){
-			return left.resolve(creature) - right.resolve(creature);
-		}
-	}
-	
-	public static class SubstractionDouble implements IEvaluator<Double>{
 		private final IEvaluator<Double> left, right;
 		
-		public SubstractionDouble(IEvaluator<Double> left, IEvaluator<Double> right) {
+		public SubtractionFloat(IEvaluator<Double> left, IEvaluator<Double> right) {
 			this.left = left;
 			this.right = right;
 		}
@@ -153,16 +146,43 @@ public interface IEvaluator<T>
 		}
 	}
 	
-	public static class MultFloat implements IEvaluator<Float> {
+	
+	public static class SubtractionInteger implements IEvaluator<Integer>{
+		private final IEvaluator<Integer> left, right;
 		
-		private final IEvaluator<Float> left, right;
-		
-		public MultFloat(IEvaluator<Float> left, IEvaluator<Float> right) {
+		public SubtractionInteger(IEvaluator<Integer> left, IEvaluator<Integer> right) {
 			this.left = left;
 			this.right = right;
 		}
 		
-		public Float resolve(Creature creature){
+		public Integer resolve(Creature creature){
+			return left.resolve(creature) - right.resolve(creature);
+		}
+	}
+	
+	public static class SubtractionDouble implements IEvaluator<Double>{
+		private final IEvaluator<Double> left, right;
+		
+		public SubtractionDouble(IEvaluator<Double> left, IEvaluator<Double> right) {
+			this.left = left;
+			this.right = right;
+		}
+		
+		public Double resolve(Creature creature){
+			return left.resolve(creature) - right.resolve(creature);
+		}
+	}
+	
+	public static class MultFloat implements IEvaluator<Double> {
+		
+		private final IEvaluator<Double> left, right;
+		
+		public MultFloat(IEvaluator<Double> left, IEvaluator<Double> right) {
+			this.left = left;
+			this.right = right;
+		}
+		
+		public Double resolve(Creature creature){
 			return left.resolve(creature) * right.resolve(creature);
 		}
 	}
@@ -194,16 +214,16 @@ public interface IEvaluator<T>
 		}
 	}
 	
-	public static class DivFloat implements IEvaluator<Float> {
+	public static class DivFloat implements IEvaluator<Double> {
 		
-		private final IEvaluator<Float> left, right;
+		private final IEvaluator<Double> left, right;
 		
-		public DivFloat(IEvaluator<Float> left, IEvaluator<Float> right) {
+		public DivFloat(IEvaluator<Double> left, IEvaluator<Double> right) {
 			this.left = left;
 			this.right = right;
 		}
 		
-		public Float resolve(Creature creature){
+		public Double resolve(Creature creature){
 			return left.resolve(creature) / right.resolve(creature);
 		}
 	}
@@ -235,4 +255,16 @@ public interface IEvaluator<T>
 		}
 	}
 
+	public static class NegateDouble implements IEvaluator<Double> {
+		private final IEvaluator<Double> left;
+		
+		public NegateDouble(IEvaluator<Double> left) {
+			this.left = left;
+		}
+		
+		public Double resolve(Creature creature) {
+			return -1 * left.resolve(creature);
+		}
+	}
+	
 }
