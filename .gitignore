@@ -17,3 +17,5 @@ local.properties
 
 # Mac hidden files
 .DS_Store
+
+src/com/gamma/Creature.java
