@@ -10,13 +10,13 @@ import fitness.IFitnessed;
 
 public class Creature extends Entity implements IFitnessed
 {	
-	public static final int GENOME_LENGTH = 4, MOVES_PER_REPATHING = 7;
-	public static final float MAX_ENERGY = 30f, ENERGY_LOST_PER_TICK = .25f;
+	public static final int GENOME_LENGTH = 8, MOVES_PER_REPATHING = 7;
+	public static final float MAX_ENERGY = 30f, ENERGY_LOST_PER_TICK = .25f, MIN_COLOR = 20;
 	
 	private final float[] genes;
 	private final int ticksPerMove;
 	private final boolean dealsDamage;
-	private final float energyPerMove, damagePerHit, energyPerHit, stepHeight;
+	private final float energyPerMove, damagePerHit, energyPerHit, stepHeight, energyCapacity, red, green, blue;
 
 	private float fitness = .1f;
 	private int killCount = 0, deathCount = 0;
@@ -33,23 +33,34 @@ public class Creature extends Entity implements IFitnessed
 		
 		this.ticksPerMove = 1 + (int)(genes[0] * 9f);
 		this.energyPerMove = 1.1f - genes[0];
-		
+		this.energyCapacity = (genes[4] * MAX_ENERGY);
+				
 		this.damagePerHit = genes[1] * 5f;
 		this.energyPerHit = genes[1] * genes[1] * 5f;
 		this.dealsDamage = genes[2] >= .5f;
 		
 		this.stepHeight = 1f + genes[3];
+		
+		this.red = MIN_COLOR + 0.8f * genes[5];
+		this.blue = MIN_COLOR + 0.8f * genes[6];
+		this.green = MIN_COLOR + 0.8f * genes[7];
 	}
 
 	@Override public float getFitness() { return fitness; }
 	@Override public float getColorRed() { return 1f; }
-	@Override public float getColorGreen() { return energy / MAX_ENERGY; }
-	@Override public float getColorBlue() { return energy / MAX_ENERGY; }
+	@Override public float getColorGreen() { return energy / energyCapacity; }
+	@Override public float getColorBlue() { return energy / energyCapacity; }
+	
+	public float[] getStats() {
+		float[] stats = new float[11];
+		//Put appropriate values in stats
+		return stats;
+	}
 	
 	public void onBirth()
 	{
 		isDead = false;
-		energy = MAX_ENERGY;
+		energy = energyCapacity;
 		currentPath.clear();
 	}
 	
