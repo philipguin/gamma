@@ -21,9 +21,11 @@ import src.SubarrayDerivator;
 import src.WeightedArray2DAdder;
 import weights.FitnessWeightMaker;
 import android.app.Activity;
+import android.content.Intent;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 
 public class MainActivity extends Activity
 {	
@@ -133,6 +135,27 @@ public class MainActivity extends Activity
     {
         super.onPause();
         view.onPause();
+    }
+    
+    /** Called when the user clicks the "Return to Main Menu" menu button
+     *  (via onOptionsItemSelected)
+     */
+    private void goToMainMenu() {
+    	Intent intent = new Intent(this, HomeActivity.class);
+    	startActivity(intent);
+    }
+    
+    /** Acts as a dispatch for when the user clicks menu buttons **/
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.main_menu_return:
+            	goToMainMenu();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 }
