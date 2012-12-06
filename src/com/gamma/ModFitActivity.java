@@ -54,9 +54,8 @@ public class ModFitActivity extends Activity {
         		
         		//Fill textbox
         		extractTextboxData();
-        	} catch (FileNotFoundException e) {
-        	    e.printStackTrace();
-        	} catch (IOException e) {
+        	} catch (Exception e) {
+        		inputStrings = new ArrayList<String>();
         	    e.printStackTrace();
         	}
         } else {
