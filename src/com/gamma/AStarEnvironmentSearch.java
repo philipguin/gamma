@@ -15,7 +15,7 @@ public abstract class AStarEnvironmentSearch
 	
 	private AStarEnvironmentSearch() { }
 	
-	private static final float costEstimate(IEnvironment environment, float laxness, int fromX, int fromY, int goalX, int goalY, float goalElevation)
+	public static final float costEstimate(IEnvironment environment, float laxness, int fromX, int fromY, int goalX, int goalY, float goalElevation)
 	{
 		int dx = Math.abs(goalX - fromX);
 		int dy = Math.abs(goalY - fromY);

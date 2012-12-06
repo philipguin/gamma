@@ -2,6 +2,7 @@ package com.gamma;
 
 import genome.GaussianRandomGenomeCreator;
 import genome.GenomeMater;
+import genome.UniformRandomGenomeCreator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +31,7 @@ public class MainActivity extends Activity
 	private Simulation simulation;
 	private volatile boolean mainLoopRunning = true;
 
-	private int frameRateCap = 10;
+	private int frameRateCap = 100;
 	private long lastDrawTime = 0;
 	
 	private static final int initialCreatureCount = 40;
@@ -71,18 +72,18 @@ public class MainActivity extends Activity
         
         Random random = new Random();
         IEnvironment environment = new Environment(new byte[32 * 32], /*new float[32 * 32],*/ generateTerrain(random, 32, 32), new float[32 * 32], 5);
-        ICreator<float[]> geneCreator = new GaussianRandomGenomeCreator(random, Creature.GENOME_LENGTH, 0f, 1f, 0f, 1f);
+        ICreator<float[]> geneCreator = new UniformRandomGenomeCreator(random, Creature.GENOME_LENGTH, 0f, 1f);
 
         List<Creature> creatures = new ArrayList<Creature>(initialCreatureCount);
         for (int i = 0; i < initialCreatureCount; ++i)
-        	creatures.add(new Creature(geneCreator.create()));
+        	creatures.add(new Creature(random, geneCreator.create()));
         
         this.simulation = new Simulation(
         		random,
     			environment,
     			creatures,
     			new SelectionReproducer<Creature>(2, new WeightedMultiselector<Creature>(random, new FitnessWeightMaker<Creature>(), true)),
-    			new Creature.Mater(new GenomeMater(random, 0f, 1f, .25f, .2f, .25f)),
+    			new Creature.Mater(random, new GenomeMater(random, 0f, 1f, .25f, .2f, .25f)),
     			5 * 60 * 40);
     			
         view = new SimulationSurfaceView(this, simulation);
