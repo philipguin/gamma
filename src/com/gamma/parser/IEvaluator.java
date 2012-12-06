@@ -6,57 +6,69 @@ public interface IEvaluator<T>
 {	
 	public T resolve(Creature creature);
 	
-	public static class GetSpeed implements IEvaluator<Float> {
+	public static class IDspeed implements IEvaluator<Float> {
 		public Float resolve(Creature creature){
 			return creature.getSpeed();
 		}
 	}
 	
-	public static class GetStrength implements IEvaluator<Float> {
+	public static class IDstrength implements IEvaluator<Float> {
 		public Float resolve(Creature creature){
 			return creature.getStrength();
 		}
 	}
 	
-	public static class getStepHeight implements IEvaluator<Float> {
+	public static class IDstepHeight implements IEvaluator<Float> {
 		public Float resolve(Creature creature){
 			return creature.getStepHeight();
 		}
 	}
 	
-	public static class getMaxEnergy implements IEvaluator<Float> {
+	public static class IDmaxEnergy implements IEvaluator<Float> {
 		public Float resolve(Creature creature){
 			return creature.getMaxEnergy();
 		}
 	}
 	
-	public static class getEnergy implements IEvaluator<Float> {
+	public static class IDkills implements IEvaluator<Float> {
 		public Float resolve(Creature creature){
-			return creature.getEnergy();
+			return (float) creature.getKills();
 		}
 	}
 	
-	public static class getKills implements IEvaluator<Integer> {
-		public Integer resolve(Creature creature){
-			return creature.getKills();
+	public static class IDdeaths implements IEvaluator<Float> {
+		public Float resolve(Creature creature){
+			return (float) creature.getDeaths();
 		}
 	}
 	
-	public static class getDeaths implements IEvaluator<Integer> {
-		public Integer resolve(Creature creature){
-			return creature.getDeaths();
-		}
-	}
-	
-	public static class getTotalDamageOutput implements IEvaluator<Float> {
+	public static class IDtotalDamageOutput implements IEvaluator<Float> {
 		public Float resolve(Creature creature){
 			return creature.getTotalDamageOutput();
 		}
 	}
 	
-	public static class getTotalDamageTaken implements IEvaluator<Float> {
+	public static class IDtotalDamageTaken implements IEvaluator<Float> {
 		public Float resolve(Creature creature){
 			return creature.getTotalDamageTaken();
+		}
+	}
+	
+	public static class IDred implements IEvaluator<Float> {
+		public Float resolve(Creature creature){
+			return creature.getColorRed();
+		}
+	}
+	
+	public static class IDblue implements IEvaluator<Float> {
+		public Float resolve(Creature creature){
+			return creature.getColorBlue();
+		}
+	}
+	
+	public static class IDgreen implements IEvaluator<Float> {
+		public Float resolve(Creature creature){
+			return creature.getColorGreen();
 		}
 	}
 
