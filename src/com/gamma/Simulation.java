@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
 
+import android.app.Activity;
+import android.util.Log;
+
 import reproducers.IReproducer;
 import spawners.IMater;
 
@@ -20,8 +23,9 @@ public class Simulation
 	private long ticksThisRound = 0L;
 	private List<Creature> creatures;
 	private List<Entity> entities;
+	private FitnessCalculator fitnessCalculator;
 	
-	public Simulation(Random random, IEnvironment environment, List<Creature> initialCreaturePopulation, IReproducer<Creature> reproducer, IMater<Creature> mater, long ticksPerRound)
+	public Simulation(Random random, IEnvironment environment, List<Creature> initialCreaturePopulation, IReproducer<Creature> reproducer, IMater<Creature> mater, long ticksPerRound, Activity context)
 	{
 		this.random = random;
 		this.environment = environment;
@@ -31,6 +35,9 @@ public class Simulation
 		this.ticksPerRound = ticksPerRound;
 		
 		this.entities = new LinkedList<Entity>(creatures);
+		
+		fitnessCalculator = new FitnessCalculator(context);
+		Log.d("debug","in Simulation constructor, before onRoundBegin");
 		onRoundBegin();
 	}
 	
@@ -45,6 +52,8 @@ public class Simulation
         	c.setInitialPosition(random.nextInt(environment.getWidth()), random.nextInt(environment.getHeight()));
         	c.onBirth();
         }
+        Log.d("debug","in Simulation onRoundBegin, before onRoundBegin");
+        fitnessCalculator.setCreatures(creatures);
 	}
 	
 	public void performTick()
@@ -78,6 +87,7 @@ public class Simulation
 			for (Entity entity : entities)
 				entity.onRemoval();
 			
+			fitnessCalculator.calculateFitnesses();
 			creatures = reproducer.makeNextGeneration(creatures, mater);
 			entities = new LinkedList<Entity>(creatures);
 			onRoundBegin();

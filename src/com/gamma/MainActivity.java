@@ -23,6 +23,7 @@ import weights.FitnessWeightMaker;
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.Log;
 
 public class MainActivity extends Activity
 {	
@@ -68,7 +69,7 @@ public class MainActivity extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        
+        Log.d("debug","in MainActivity.java");
         Random random = new Random();
         IEnvironment environment = new Environment(new byte[32 * 32], /*new float[32 * 32],*/ generateTerrain(random, 32, 32), new float[32 * 32], 5);
         ICreator<float[]> geneCreator = new GaussianRandomGenomeCreator(random, Creature.GENOME_LENGTH, 0f, 1f, 0f, 1f);
@@ -77,13 +78,16 @@ public class MainActivity extends Activity
         for (int i = 0; i < initialCreatureCount; ++i)
         	creatures.add(new Creature(geneCreator.create()));
         
+        Log.d("debug","before creating simulation");
         this.simulation = new Simulation(
         		random,
     			environment,
     			creatures,
     			new SelectionReproducer<Creature>(2, new WeightedMultiselector<Creature>(random, new FitnessWeightMaker<Creature>(), true)),
     			new Creature.Mater(new GenomeMater(random, 0f, 1f, .25f, .2f, .25f)),
-    			5 * 60 * 40);
+    			5 * 60 * 40, 
+    			this);
+        Log.d("debug","created simulation");
     			
         view = new SimulationSurfaceView(this, simulation);
         

@@ -56,6 +56,10 @@ public class Creature extends Entity implements IFitnessed
 	public float getStrength() { return damagePerHit; }
 	public float getCapacity() { return energyCapacity; }
 	
+	public void setFitness(float newFitness) {
+		fitness = newFitness;
+	}
+	
 	public void onBirth()
 	{
 		isDead = false;

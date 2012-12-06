@@ -46,6 +46,7 @@ public class ModFitActivity extends Activity {
         		
         		//Read the algorithm from the file
         		String algorithm = input.readLine();
+        		input.close();
         		
         		//Initialize input strings with algorithm
         		inputStrings = new ArrayList<String>();
@@ -53,8 +54,6 @@ public class ModFitActivity extends Activity {
         		
         		//Fill textbox
         		extractTextboxData();
-        		
-        		input.close();
         	} catch (FileNotFoundException e) {
         	    e.printStackTrace();
         	} catch (IOException e) {
