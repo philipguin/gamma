@@ -19,6 +19,7 @@ public class Simulation
 	private final IMater<Creature> mater;
 	private final long ticksPerRound;
 	
+	private int currentGeneration = 0;
 	private long ticksThisRound = 0L;
 	private List<Creature> creatures;
 	private List<Entity> entities;
@@ -41,7 +42,7 @@ public class Simulation
 	
 	private void onRoundBegin()
 	{
-		ticksThisRound = 0;
+		ticksThisRound = 0L;
 		
         for (int i = 0; i < creatures.size(); ++i)
         {
@@ -87,10 +88,12 @@ public class Simulation
 			fitnessCalculator.calculateFitnesses();
 			creatures = reproducer.makeNextGeneration(creatures, mater);
 			entities = new LinkedList<Entity>(creatures);
+			++currentGeneration;
 			onRoundBegin();
 		}
 	}
 	
+	public final int getGeneration() { return currentGeneration; }
 	public final IEnvironment getEnvironment() { return environment; }
 	public final Random getRandom() { return random; }
 	public final List<Creature> getCreatures() { return Collections.unmodifiableList(creatures); }

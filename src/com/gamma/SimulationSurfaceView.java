@@ -45,7 +45,13 @@ public class SimulationSurfaceView extends GLSurfaceView
 				
 			}
 		};
-		this.renderer = new DrawableRenderer(new SimulationDrawable(simulation, blockColorizer), this.getResources());
+		this.renderer = new DrawableRenderer(new SimulationDrawable(
+				simulation,
+				blockColorizer,
+				R.drawable.ic_font_default,
+				FontRenderer.getAllowedCharacters(this.getResources().openRawResource(R.raw.font))),
+				this.getResources());
+		
         this.setRenderer(renderer);
 		this.setRenderMode(RENDERMODE_WHEN_DIRTY);
 	}

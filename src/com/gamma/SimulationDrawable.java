@@ -3,6 +3,7 @@ package com.gamma;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.text.DecimalFormat;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -13,11 +14,17 @@ public class SimulationDrawable implements IDrawable<GL10>
 {
 	private final Simulation simulation;
 	private final IBlockColorizer blockColorizer;
+	private final int fontResourceID;
+	private final String fontAllowedCharacters;
 	
-	public SimulationDrawable(Simulation simulation, IBlockColorizer blockColorizer)
+	private FontRenderer fontRenderer = null;
+	
+	public SimulationDrawable(Simulation simulation, IBlockColorizer blockColorizer, int fontResourceID, String fontAllowedCharacters)
 	{
 		this.simulation = simulation;
 		this.blockColorizer = blockColorizer;
+		this.fontResourceID = fontResourceID;
+		this.fontAllowedCharacters = fontAllowedCharacters;
 	}
 	
 	private final ByteBuffer quadTexCoordBufferDirect = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder());
@@ -26,13 +33,20 @@ public class SimulationDrawable implements IDrawable<GL10>
 	private final FloatBuffer quadTexCoordBuffer = quadTexCoordBufferDirect.asFloatBuffer();
 	private final FloatBuffer quadVertexBuffer = quadVertexBufferDirect.asFloatBuffer();
 	private final FloatBuffer quadColorBuffer = quadColorBufferDirect.asFloatBuffer();
-	
+
+	private static final float Z_NEAREST = -100f, Z_FURTHEST = 100f;
 	public static final int BLOCK_BIT_SHIFT = 4;
 	public static final int BLOCK_DIMENSIONS = 1 << BLOCK_BIT_SHIFT;
 	
 	@Override
 	public void draw(GL10 gl, TextureManager textureManager, Viewport v)
 	{
+		gl.glClearColor(0f, 0f, 0f, 1f);
+		gl.glClear(GLES10.GL_COLOR_BUFFER_BIT | GLES10.GL_DEPTH_BUFFER_BIT);
+		gl.glFlush();
+
+		gl.glLoadIdentity();
+    	
 		gl.glEnable(GLES10.GL_TEXTURE_2D);
 		gl.glTexEnvx(GLES10.GL_TEXTURE_ENV, GLES10.GL_TEXTURE_ENV_MODE, GLES10.GL_MODULATE);
 
@@ -54,8 +68,10 @@ public class SimulationDrawable implements IDrawable<GL10>
 
 		synchronized (simulation)
 		{
+	    	gl.glOrthof(v.getLeft(), v.getRight(), v.getTop(), v.getBottom(), Z_NEAREST, Z_FURTHEST);
 			drawEnvironment(gl, textureManager, v);
 			drawCreatures(gl, textureManager, v);
+			drawHUD(gl, textureManager, v);
 		}
 
 		gl.glDisable(GLES10.GL_TEXTURE_2D);
@@ -63,6 +79,9 @@ public class SimulationDrawable implements IDrawable<GL10>
 	
 	private void drawEnvironment(GL10 gl, TextureManager textureManager, Viewport v)
 	{
+		gl.glEnable(GLES10.GL_BLEND);
+    	gl.glBlendFunc(GLES10.GL_ONE, GLES10.GL_ONE_MINUS_SRC_ALPHA);
+    	
 		// Draw environment;
 		IEnvironment environment = simulation.getEnvironment();
 		textureManager.bindTexture(gl, R.drawable.ic_terrain);
@@ -103,6 +122,9 @@ public class SimulationDrawable implements IDrawable<GL10>
 
 	private void drawCreatures(GL10 gl, TextureManager textureManager, Viewport v)
 	{
+		gl.glEnable(GLES10.GL_BLEND);
+    	gl.glBlendFunc(GLES10.GL_ONE, GLES10.GL_ONE_MINUS_SRC_ALPHA);
+    	
 		int lastTextureIndex = -1;
 		int drawX, drawY, drawXEnd, drawYEnd;
 		textureManager.bindTexture(gl, R.drawable.ic_terrain);
@@ -149,5 +171,30 @@ public class SimulationDrawable implements IDrawable<GL10>
 
 	    	gl.glDrawArrays(GLES10.GL_TRIANGLE_STRIP, 0, 4);
 		}
+	}
+
+	private static final int FPS_FRAMES = 5;
+	private static final DecimalFormat fpsFormat = new DecimalFormat("##.##");
+	private int fpsCount = 0;
+	private float fps;
+	private long timeOfLastDraw = 0;
+	
+	private void drawHUD(GL10 gl, TextureManager tm, Viewport v)
+	{
+		if (fontRenderer == null)
+			fontRenderer = new FontRenderer(gl, tm, fontResourceID, 128, 128, fontAllowedCharacters);
+		
+		if (++fpsCount >= FPS_FRAMES)
+		{
+			long timePassed = System.currentTimeMillis() - timeOfLastDraw;
+			timeOfLastDraw += timePassed;
+			fps = fpsCount * 1000f / timePassed;
+			fpsCount = 0;
+		}
+		
+		fontRenderer.setupStringRendering(gl);
+		fontRenderer.drawString(gl, tm, "FPS: " + fpsFormat.format(fps), v.getLeft(), v.getTop(), 0xFFFFFFFF);
+		fontRenderer.drawString(gl, tm, "Generation " + simulation.getGeneration(), v.getLeft(), v.getTop() + 10, 0xFFFFFFFF);
+		fontRenderer.endStringRendering(gl);
 	}
 }
