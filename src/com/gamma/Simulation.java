@@ -7,7 +7,6 @@ import java.util.ListIterator;
 import java.util.Random;
 
 import android.app.Activity;
-import android.util.Log;
 
 import reproducers.IReproducer;
 import spawners.IMater;
@@ -37,7 +36,6 @@ public class Simulation
 		this.entities = new LinkedList<Entity>(creatures);
 		
 		fitnessCalculator = new FitnessCalculator(context);
-		Log.d("debug","in Simulation constructor, before onRoundBegin");
 		onRoundBegin();
 	}
 	
@@ -52,7 +50,6 @@ public class Simulation
         	c.setInitialPosition(random.nextInt(environment.getWidth()), random.nextInt(environment.getHeight()));
         	c.onBirth();
         }
-        Log.d("debug","in Simulation onRoundBegin, before onRoundBegin");
         fitnessCalculator.setCreatures(creatures);
 	}
 	
