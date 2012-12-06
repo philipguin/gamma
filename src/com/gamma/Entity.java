@@ -3,20 +3,19 @@ package com.gamma;
 import java.nio.FloatBuffer;
 import java.util.Random;
 
-public class Entity
+public abstract class Entity
 {
 	private static final float CREATURE_TILE_RESOLUTION = 1 / 16f;
 	private final int textureIndex;
 	private final float sheetX, sheetXEnd, sheetY, sheetYEnd;
 	
 	private int entityID;
-	private boolean isDead = false;
 	private int posX = -1, posY = -1;
-	private float colorRed = 1f, colorGreen = 1f, colorBlue = 1f;
 
 	protected Simulation simulation;
 	protected IEnvironment environment;
 	protected Random random;
+	protected boolean isDead = false;
 	
 	public Entity(int textureIndex)
 	{
@@ -37,9 +36,9 @@ public class Entity
 	}
 	
 	public final int getTextureIndex() { return textureIndex; }
-	public final float getColorRed() { return colorRed; }
-	public final float getColorGreen() { return colorGreen; }
-	public final float getColorBlue() { return colorBlue; }
+	public abstract float getColorRed();
+	public abstract float getColorGreen();
+	public abstract float getColorBlue();
 
 	@Override
 	public final boolean equals(Object o)
@@ -71,8 +70,11 @@ public class Entity
 	public final boolean isDead() { return isDead; }
 	
 	/** Flags the creature as dead, so that it will be removed from the world after the current tick. */
-	public final void setDead()
+	public void setDead()
 	{
+		if (isDead)
+			return;
+		
 		isDead = true;
 		environment.setEntity(this.posX, this.posY, null);
 	}
@@ -95,7 +97,12 @@ public class Entity
 		environment.setEntity(this.posX, this.posY, this);
 	}
 
-	public void onUpdate()
+	public void onUpdate(long simulationTime)
+	{
+		
+	}
+	
+	public void onCollision(Entity collidingEntity)
 	{
 		
 	}

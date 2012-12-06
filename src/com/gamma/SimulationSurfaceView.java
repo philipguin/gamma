@@ -21,9 +21,9 @@ public class SimulationSurfaceView extends GLSurfaceView
 			@Override
 			public void fillColorBuffer(FloatBuffer buffer, float temperature, float elevation)
 			{
-				float red = .2f + .02f * temperature;
+				float red = .05f + .2f * elevation;
 				float green = .2f + .8f * elevation;
-				float blue = .2f + .5f * elevation;
+				float blue = .05f + .2f * elevation;
 				
 				buffer.put(0,  red);
 				buffer.put(1,  green);

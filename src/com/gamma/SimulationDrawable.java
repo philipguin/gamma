@@ -27,7 +27,7 @@ public class SimulationDrawable implements IDrawable<GL10>
 	private final FloatBuffer quadVertexBuffer = quadVertexBufferDirect.asFloatBuffer();
 	private final FloatBuffer quadColorBuffer = quadColorBufferDirect.asFloatBuffer();
 	
-	public static final int BLOCK_BIT_SHIFT = 5;
+	public static final int BLOCK_BIT_SHIFT = 4;
 	public static final int BLOCK_DIMENSIONS = 1 << BLOCK_BIT_SHIFT;
 	
 	@Override

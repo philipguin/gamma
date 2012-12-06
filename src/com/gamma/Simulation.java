@@ -15,11 +15,13 @@ public class Simulation
 	private final IEnvironment environment;
 	private final IReproducer<Creature> reproducer;
 	private final IMater<Creature> mater;
-	private int ticksPerRound, ticksThisRound = 0;
+	private final long ticksPerRound;
+	
+	private long ticksThisRound = 0L;
 	private List<Creature> creatures;
 	private List<Entity> entities;
 	
-	public Simulation(Random random, IEnvironment environment, List<Creature> initialCreaturePopulation, IReproducer<Creature> reproducer, IMater<Creature> mater, int ticksPerRound)
+	public Simulation(Random random, IEnvironment environment, List<Creature> initialCreaturePopulation, IReproducer<Creature> reproducer, IMater<Creature> mater, long ticksPerRound)
 	{
 		this.random = random;
 		this.environment = environment;
@@ -41,6 +43,7 @@ public class Simulation
         	Creature c = creatures.get(i);
         	c.setRoundVariables(this, i);
         	c.setInitialPosition(random.nextInt(environment.getWidth()), random.nextInt(environment.getHeight()));
+        	c.onBirth();
         }
 	}
 	
@@ -51,14 +54,21 @@ public class Simulation
 		while (it.hasNext())
 		{
 			Entity entity = it.next();
-			entity.onUpdate();
+			entity.onUpdate(ticksThisRound);
 			
 			if (!entity.isDead())
 				continue;
 			
-			it.remove();
-			entity.onRemoval();
-			// handle removal from simulation
+			if (entity instanceof Creature)
+			{
+				((Creature)entity).onBirth();
+	        	entity.setPosition(random.nextInt(environment.getWidth()), random.nextInt(environment.getHeight()));
+			}
+			else
+			{
+				it.remove();
+				entity.onRemoval();
+			}
 		}
 		
 		++ticksThisRound;

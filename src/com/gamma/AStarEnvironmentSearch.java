@@ -4,13 +4,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import android.util.FloatMath;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 
 public abstract class AStarEnvironmentSearch
 {
-	private static final float SQRT_OF_TWO = FloatMath.sqrt(2f);
+	private static final float SQRT_OF_TWO = (float)Math.sqrt(2);
 	private static final float SQRT_OF_TWO_MINUS_TWO = SQRT_OF_TWO - 2f;
 	private static final float COST_PER_ELEVATION = 16f;
 	

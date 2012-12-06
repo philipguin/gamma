@@ -4,47 +4,86 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spawners.IMater;
+import util.IMapping;
+import util.TransparentList;
 import fitness.IFitnessed;
 
 public class Creature extends Entity implements IFitnessed
 {	
-	private final float stepHeight = 1f;
-	private ArrayList<Integer> currentPath = new ArrayList<Integer>();
+	public static final int GENOME_LENGTH = 4, MOVES_PER_REPATHING = 7;
+	public static final float MAX_ENERGY = 30f, ENERGY_LOST_PER_TICK = .25f;
 	
-	public Creature(int textureIndex)
-	{
-		super(textureIndex);
-	}
+	private final float[] genes;
+	private final int ticksPerMove;
+	private final boolean dealsDamage;
+	private final float energyPerMove, damagePerHit, energyPerHit, stepHeight;
 
 	private float fitness = .1f;
+	private int killCount = 0, deathCount = 0;
+	private float energy;
 
-	@Override
-	public float getFitness()
+	private ArrayList<Integer> currentPath = new ArrayList<Integer>();
+	private Entity target = null;
+	private int oldTargetX, oldTargetY;
+	
+	public Creature(float[] genes)
 	{
-		return fitness;
+		super(119);
+		this.genes = genes;
+		
+		this.ticksPerMove = 1 + (int)(genes[0] * 9f);
+		this.energyPerMove = 1.1f - genes[0];
+		
+		this.damagePerHit = genes[1] * 5f;
+		this.energyPerHit = genes[1] * genes[1] * 5f;
+		this.dealsDamage = genes[2] >= .5f;
+		
+		this.stepHeight = 1f + genes[3];
+	}
+
+	@Override public float getFitness() { return fitness; }
+	@Override public float getColorRed() { return 1f; }
+	@Override public float getColorGreen() { return energy / MAX_ENERGY; }
+	@Override public float getColorBlue() { return energy / MAX_ENERGY; }
+	
+	public void onBirth()
+	{
+		isDead = false;
+		energy = MAX_ENERGY;
+		currentPath.clear();
 	}
 	
 	@Override
-	public void onUpdate()
+	public void onUpdate(long simulationTime)
 	{
-		performMovement();
-	}
-	
-	private boolean performMovement()
-	{
-		if (currentPath.isEmpty())
+		performMovement(simulationTime);
+		
+		energy -= ENERGY_LOST_PER_TICK;
+		
+		if (energy <= 0f)
 		{
-			int goalX = Math.max(0, Math.min(environment.getWidth()  - 1, getX() - 30 + random.nextInt(60)));
-			int goalY = Math.max(0, Math.min(environment.getHeight() - 1, getY() - 30 + random.nextInt(60)));
+			energy = 0f;
+			setDead();
+		}
+	}
+	
+	private boolean performMovement(long simulationTime)
+	{
+		if (simulationTime % ticksPerMove != 0 || energy < energyPerMove)
+			return false;
+		
+		if (target != null && simulationTime / ticksPerMove % MOVES_PER_REPATHING == 0 && target.getX() != oldTargetX && target.getY() != oldTargetY)
+		{
+			oldTargetX = target.getX();
+			oldTargetY = target.getY();
 			
-			boolean foundPath = AStarEnvironmentSearch.performAStar(environment, 1.0001f, stepHeight, getX(), getY(), goalX, goalY, currentPath);
-			
-			if (!foundPath || currentPath.isEmpty())
+			if (!repath(oldTargetX, oldTargetY))
 				return false;
-			
-			currentPath.remove(0); // We're already in the first element
-
-			if (currentPath.isEmpty())
+		}
+		else if (currentPath.isEmpty())
+		{
+			if (!repath(Math.max(0, Math.min(environment.getWidth()  - 1, getX() - 30 + random.nextInt(60))),
+						Math.max(0, Math.min(environment.getHeight() - 1, getY() - 30 + random.nextInt(60)))))
 				return false;
 		}
 		
@@ -56,27 +95,90 @@ public class Creature extends Entity implements IFitnessed
 		
 		if (collidingEntity != null)
 		{
-			onCollision(collidingEntity, newX, newY);
+			this.onCollision(collidingEntity);
+			collidingEntity.onCollision(this);
 			currentPath.clear();
 			return false;
 		}
 
 		currentPath.remove(0);
+		energy -= energyPerMove * Math.abs(environment.getElevation(newX, newY) - environment.getElevation(getX(), getY()));
 		setPosition(newX, newY);
 		return true;
 	}
 	
-	private void onCollision(Entity collidingEntity, int cx, int cy)
+	private final boolean repath(int goalX, int goalY)
 	{
+		boolean foundPath = AStarEnvironmentSearch.performAStar(environment, 1.0001f, stepHeight, getX(), getY(), goalX, goalY, currentPath);
+		
+		if (!foundPath || currentPath.isEmpty())
+			return false;
+		
+		currentPath.remove(0); // We're already in the first element
+
+		return !currentPath.isEmpty();
 	}
 	
-	public static final class Mater implements IMater<Creature>
+	@Override
+	public void onCollision(Entity collidingEntity)
 	{
+		if (isDead || collidingEntity.isDead())
+			return;
+		
+		if (dealsDamage && energy >= energyPerHit && collidingEntity instanceof Creature)
+		{
+			energy -= energyPerHit;
+			
+			if (((Creature)collidingEntity).takeDamage(damagePerHit))
+				++killCount;
+		}
+	}
+	
+	public boolean takeDamage(float damage)
+	{
+		energy -= damage;
+		
+		if (energy <= 0f)
+		{
+			energy = 0f;
+			setDead();
+			return true;
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public void setDead()
+	{
+		if (!isDead)
+			++deathCount;
+			
+		super.setDead();
+	}
+	
+	public static class Mater implements IMater<Creature>
+	{
+		private final IMater<float[]> genomeMater;
+		
+		public Mater(IMater<float[]> genomeMater)
+		{
+			this.genomeMater = genomeMater;
+		}
+		
 		@Override
 		public Creature mate(List<? extends Creature> parents)
 		{
-			//TODO
-			return new Creature(parents.get(0).getTextureIndex());
+			return new Creature(genomeMater.mate(new TransparentList<Creature, float[]>(parents, genomeMapping)));
 		}
+		
+		private static final IMapping<Creature, float[]> genomeMapping = new IMapping<Creature, float[]>()
+		{
+			@Override
+			public float[] map(Creature creature)
+			{
+				return creature.genes;
+			}
+		};
 	}
 }
