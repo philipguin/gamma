@@ -171,6 +171,20 @@
             </RelativeLayout>
         </TableRow>
 
+         <TableRow
+            android:id="@+id/tableRow14"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/help_text"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </TableRow>
+        
         <TableRow
             android:id="@+id/tableRow13"
             android:layout_width="wrap_content"
