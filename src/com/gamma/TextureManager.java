@@ -80,9 +80,9 @@ public class TextureManager
 
         for (int p = 0; p < pixels.length; ++p)
         {
-            int a = pixels[p] >> 24 & 0xff;
-            int r = pixels[p] >> 16 & 0xff;
-            int g = pixels[p] >> 8 & 0xff;
+            int a = pixels[p] >>> 24 & 0xff;
+            int r = pixels[p] >>> 16 & 0xff;
+            int g = pixels[p] >>> 8 & 0xff;
             int b = pixels[p] & 0xff;
 
             /*if (options != null && options.anaglyph)
@@ -137,8 +137,8 @@ public class TextureManager
 	
     private int alphaBlend(int x, int y)
     {
-        int ax = (x & 0xff000000) >> 24 & 0xff;
-        int ay = (y & 0xff000000) >> 24 & 0xff;
+        int ax = (x & 0xff000000) >>> 24 & 0xff;
+        int ay = (y & 0xff000000) >>> 24 & 0xff;
         char a = '\377';
 
         if (ax + ay < 255)

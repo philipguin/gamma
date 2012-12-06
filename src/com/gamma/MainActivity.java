@@ -72,7 +72,7 @@ public class MainActivity extends Activity
     {
         super.onCreate(savedInstanceState);
         Random random = new Random();
-        IEnvironment environment = new Environment(new byte[32 * 32], /*new float[32 * 32],*/ generateTerrain(random, 32, 32), new float[32 * 32], 5);
+        IEnvironment environment = new Environment(new byte[64 * 64], /*new float[64 * 64],*/ generateTerrain(random, 64, 64), new float[64 * 64], 6);
         ICreator<float[]> geneCreator = new UniformRandomGenomeCreator(random, Creature.GENOME_LENGTH, 0f, 1f);
 
         List<Creature> creatures = new ArrayList<Creature>(initialCreatureCount);
@@ -84,8 +84,8 @@ public class MainActivity extends Activity
     			environment,
     			creatures,
     			new SelectionReproducer<Creature>(2, new WeightedMultiselector<Creature>(random, new FitnessWeightMaker<Creature>(), true)),
-    			new Creature.Mater(random, new GenomeMater(random, 0f, 1f, .25f, .2f, .25f)), 
-    			5 * 60 * 40, 
+    			new Creature.Mater(random, new GenomeMater(random, 0f, 1f, .25f, .2f, .25f)),
+    			60 * 40,
     			this);
     			
         view = new SimulationSurfaceView(this, simulation);
