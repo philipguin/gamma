@@ -82,9 +82,9 @@ public class MainActivity extends Activity
     			environment,
     			creatures,
     			new SelectionReproducer<Creature>(2, new WeightedMultiselector<Creature>(random, new FitnessWeightMaker<Creature>(), true)),
-
-    			new Creature.Mater(new GenomeMater(random, 0f, 1f, .25f, .2f, .25f)),
-    			5 * 60 * 40, this);
+    			new Creature.Mater(random, new GenomeMater(random, 0f, 1f, .25f, .2f, .25f)), 
+    			5 * 60 * 40, 
+    			this);
     			
         view = new SimulationSurfaceView(this, simulation);
         

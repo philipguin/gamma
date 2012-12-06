@@ -2,6 +2,7 @@ package com.gamma;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import spawners.IMater;
 import util.IMapping;
@@ -10,51 +11,57 @@ import fitness.IFitnessed;
 
 public class Creature extends Entity implements IFitnessed
 {	
-	public static final int GENOME_LENGTH = 8, MOVES_PER_REPATHING = 7;
-	public static final float MAX_ENERGY = 30f, ENERGY_LOST_PER_TICK = .25f, MIN_COLOR = .2f;
+	public static final int GENOME_LENGTH = 8, MOVES_PER_REPATHING = 7, TICKS_PER_TARGET_SCAN = 1000, TARGET_SCAN_RADIUS = 10;
+	public static final float MIN_ENERGY_CAPACITY = 150f, MAX_ENERGY_CAPACITY = 300f, MIN_ENERGY_LOST_PER_TICK = .05f, MAX_ENERGY_LOST_PER_TICK = .5f, MIN_COLOR = .4f;
+	public static final float SQRT_2 = (float)Math.sqrt(2), MAX_TARGET_DISTANCE = SQRT_2 * TARGET_SCAN_RADIUS;
 	
 	private final float[] genes;
-	private final int ticksPerMove;
-	private final boolean dealsDamage;
-	private final float energyPerMove, damagePerHit, energyPerHit, stepHeight, energyCapacity, red, green, blue;
+	private final int timeOffset, ticksPerMove;
+	private final float energyPerMove, damagePerHit, energyPerHit, stepHeight, red, green, blue, targetPriority_Energy, targetPriority_Distance;
 
 	private float fitness = .1f;
 	private int killCount = 0, deathCount = 0;
-	private float energy;
+	private float energy, maxEnergy, energyLostPerTick;
 
 	private ArrayList<Integer> currentPath = new ArrayList<Integer>();
 	private Entity target = null;
 	private int oldTargetX, oldTargetY;
 	
-	public Creature(float[] genes)
+	public Creature(Random random, float[] genes)
 	{
 		super(119);
+		this.timeOffset = random.nextInt(1024);
 		this.genes = genes;
+
+		this.maxEnergy = MIN_ENERGY_CAPACITY + genes[0] * (MAX_ENERGY_CAPACITY - MIN_ENERGY_CAPACITY);
+		this.energyLostPerTick = MIN_ENERGY_LOST_PER_TICK + genes[0] * (MAX_ENERGY_LOST_PER_TICK - MIN_ENERGY_LOST_PER_TICK);
 		
-		this.ticksPerMove = 1 + (int)(genes[0] * 9f);
-		this.energyPerMove = 1.1f - genes[0];
-		this.energyCapacity = (genes[4] * MAX_ENERGY);
+		this.ticksPerMove = 1 + (int)(genes[1] * 9f);
+		this.energyPerMove = 1.1f - genes[1];
 				
-		this.damagePerHit = genes[1] * 5f;
-		this.energyPerHit = genes[1] * genes[1] * 5f;
-		this.dealsDamage = genes[2] >= .5f;
+		this.damagePerHit = genes[2] * 5f;
+		this.energyPerHit = genes[2] * genes[1] * 5f;
 		
 		this.stepHeight = 1f + genes[3];
 		
-		this.red = MIN_COLOR + (1f - MIN_COLOR) * genes[5];
-		this.green = MIN_COLOR + (1f - MIN_COLOR) * genes[6];
-		this.blue = MIN_COLOR + (1f - MIN_COLOR) * genes[7];
+		this.red = MIN_COLOR + (1f - MIN_COLOR) * genes[4];
+		this.green = MIN_COLOR + (1f - MIN_COLOR) * genes[5];
+		this.blue = MIN_COLOR + (1f - MIN_COLOR) * genes[6];
+		
+		this.targetPriority_Energy = genes[7] / MIN_ENERGY_CAPACITY;
+		this.targetPriority_Distance = (1f - genes[7]) / MAX_TARGET_DISTANCE;
 	}
 
 	@Override public float getFitness() { return fitness; }
-	@Override public float getColorRed() { return red; }
-	@Override public float getColorGreen() { return green; }
-	@Override public float getColorBlue() { return blue; }
+	@Override public float getColorRed() { return red * energy / maxEnergy; }
+	@Override public float getColorGreen() { return green * energy / maxEnergy; }
+	@Override public float getColorBlue() { return blue * energy / maxEnergy; }
 	
 	public float getStepHeight() { return stepHeight; }
 	public float getSpeed() { return ticksPerMove; }
 	public float getStrength() { return damagePerHit; }
-	public float getCapacity() { return energyCapacity; }
+	public float getMaxEnergy() { return maxEnergy; }
+	public float getEnergy() { return energy; }
 	
 	public void setFitness(float newFitness) {
 		fitness = newFitness;
@@ -63,16 +70,28 @@ public class Creature extends Entity implements IFitnessed
 	public void onBirth()
 	{
 		isDead = false;
-		energy = energyCapacity;
+		energy = maxEnergy;
 		currentPath.clear();
 	}
 	
 	@Override
 	public void onUpdate(long simulationTime)
 	{
-		performMovement(simulationTime);
+		long offsetTime = timeOffset + simulationTime;
 		
-		energy -= ENERGY_LOST_PER_TICK;
+		if (target == null && offsetTime % TICKS_PER_TARGET_SCAN == 0)
+		{
+			target = findOptimalTarget();
+			
+			if (target != null)
+			{
+				oldTargetX = target.getX();
+				oldTargetY = target.getY();
+			}
+		}
+		
+		performMovement(offsetTime);
+		energy -= energyLostPerTick;
 		
 		if (energy <= 0f)
 		{
@@ -81,12 +100,55 @@ public class Creature extends Entity implements IFitnessed
 		}
 	}
 	
-	private boolean performMovement(long simulationTime)
+	private Entity findOptimalTarget()
 	{
-		if (simulationTime % ticksPerMove != 0 || energy < energyPerMove)
+		int left = Math.max(0, getX() - TARGET_SCAN_RADIUS);
+		int top  = Math.max(0, getY() - TARGET_SCAN_RADIUS);
+		int right  = Math.min(environment.getWidth()  - 1, getX() + TARGET_SCAN_RADIUS);
+		int bottom = Math.min(environment.getHeight() - 1, getY() + TARGET_SCAN_RADIUS);
+		
+		int i, j;
+		Entity potentialTarget, bestTarget = null;
+		float costEstimate, potentialTargetPriority, bestTargetPriority = Float.NEGATIVE_INFINITY;
+		
+		for (i = left; i <= right;  ++i)
+		for (j = top;  j <= bottom; ++j)
+		{
+			if (environment.getEntity(i, j) == null)
+				continue;
+			
+			potentialTarget = environment.getEntity(i, j);
+			
+			if (!(potentialTarget instanceof Creature))
+				continue;
+			
+			costEstimate = AStarEnvironmentSearch.costEstimate(
+					environment,
+					1f,
+					getX(),
+					getY(),
+					potentialTarget.getX(),
+					potentialTarget.getY(),
+					environment.getElevation(potentialTarget.getX(), potentialTarget.getY()));
+			
+			potentialTargetPriority = (1f - targetPriority_Distance * costEstimate) + targetPriority_Energy * ((Creature)potentialTarget).getEnergy();
+			
+			if (potentialTargetPriority > bestTargetPriority)
+			{
+				bestTarget = potentialTarget;
+				bestTargetPriority = potentialTargetPriority;
+			}
+		}
+		
+		return bestTarget;
+	}
+	
+	private boolean performMovement(long offsetTime)
+	{
+		if (offsetTime % ticksPerMove != 0 || energy < energyPerMove)
 			return false;
 		
-		if (target != null && simulationTime / ticksPerMove % MOVES_PER_REPATHING == 0 && target.getX() != oldTargetX && target.getY() != oldTargetY)
+		if (target != null && (currentPath.isEmpty() || offsetTime / ticksPerMove % MOVES_PER_REPATHING == 0 && (target.getX() != oldTargetX || target.getY() != oldTargetY)))
 		{
 			oldTargetX = target.getX();
 			oldTargetY = target.getY();
@@ -138,16 +200,19 @@ public class Creature extends Entity implements IFitnessed
 		if (isDead || collidingEntity.isDead())
 			return;
 		
-		if (dealsDamage && energy >= energyPerHit && collidingEntity instanceof Creature)
+		if (energy >= energyPerHit && collidingEntity.equals(target) && collidingEntity instanceof Creature)
 		{
 			energy -= energyPerHit;
 			
-			if (((Creature)collidingEntity).takeDamage(damagePerHit))
+			if (((Creature)collidingEntity).takeDamageFromEntity(this, damagePerHit))
+			{
+				energy = maxEnergy;
 				++killCount;
+			}
 		}
 	}
 	
-	public boolean takeDamage(float damage)
+	public boolean takeDamageFromEntity(Entity attacker, float damage)
 	{
 		energy -= damage;
 		
@@ -157,7 +222,6 @@ public class Creature extends Entity implements IFitnessed
 			setDead();
 			return true;
 		}
-		
 		return false;
 	}
 	
@@ -170,19 +234,27 @@ public class Creature extends Entity implements IFitnessed
 		super.setDead();
 	}
 	
+	@Override
+	public void onRemoval()
+	{
+		target = null;
+	}
+	
 	public static class Mater implements IMater<Creature>
 	{
+		private final Random random;
 		private final IMater<float[]> genomeMater;
 		
-		public Mater(IMater<float[]> genomeMater)
+		public Mater(Random random, IMater<float[]> genomeMater)
 		{
+			this.random = random;
 			this.genomeMater = genomeMater;
 		}
 		
 		@Override
 		public Creature mate(List<? extends Creature> parents)
 		{
-			return new Creature(genomeMater.mate(new TransparentList<Creature, float[]>(parents, genomeMapping)));
+			return new Creature(random, genomeMater.mate(new TransparentList<Creature, float[]>(parents, genomeMapping)));
 		}
 		
 		private static final IMapping<Creature, float[]> genomeMapping = new IMapping<Creature, float[]>()
